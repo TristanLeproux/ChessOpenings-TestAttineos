@@ -1,0 +1,10 @@
+NOTES.md
+.env.local
+back/var/
+back/vendor/
+back/.env.local
+front/node_modules/
+front/dist/
+.idea/
+.vscode/
+.DS_Store
