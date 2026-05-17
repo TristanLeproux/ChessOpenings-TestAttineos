@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useOpenings } from '@/hooks/use-openings'
+import { useDeleteOpening } from '@/hooks/use-delete-opening'
+import { DeleteConfirmDialog } from '@/components/delete-confirm-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { Opening } from '@/types/opening'
@@ -105,14 +108,18 @@ function OpeningRow({ opening, onDeleteClick }: {
 export default function OpeningListPage() {
   const { data: openings, isLoading, isError } = useOpenings()
   const navigate = useNavigate()
+  const deleteMutation = useDeleteOpening()
+  const [openingToDelete, setOpeningToDelete] = useState<Opening | null>(null)
 
-  if (isError) {
-    toast.error('Impossible de charger les ouvertures.')
-  }
+  useEffect(() => {
+    if (isError) toast.error('Impossible de charger les ouvertures.')
+  }, [isError])
 
-  const handleDeleteClick = (opening: Opening) => {
-    // La modale de confirmation sera branchée à l'étape 8.
-    toast.info(`Suppression de "${opening.name}" — disponible à l'étape 8.`)
+  const handleConfirmDelete = () => {
+    if (!openingToDelete) return
+    deleteMutation.mutate(openingToDelete.id, {
+      onSuccess: () => setOpeningToDelete(null),
+    })
   }
 
   return (
@@ -147,12 +154,19 @@ export default function OpeningListPage() {
               <OpeningRow
                 key={opening.id}
                 opening={opening}
-                onDeleteClick={handleDeleteClick}
+                onDeleteClick={setOpeningToDelete}
               />
             ))}
           </tbody>
         </table>
       )}
+
+      <DeleteConfirmDialog
+        opening={openingToDelete}
+        isPending={deleteMutation.isPending}
+        onClose={() => setOpeningToDelete(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   )
 }

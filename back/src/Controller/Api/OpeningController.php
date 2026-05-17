@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -31,7 +32,7 @@ class OpeningController extends AbstractController
     {
         $openings = $this->repository->findAll();
 
-        return new JsonResponse(
+        return $this->json(
             array_map(
                 static fn(Opening $opening) => OpeningOutput::fromEntity($opening)->toArray(),
                 $openings,
@@ -45,10 +46,10 @@ class OpeningController extends AbstractController
         $opening = $this->repository->find($id);
 
         if ($opening === null) {
-            return new JsonResponse(['error' => 'Opening not found'], 404);
+            return $this->json(['error' => 'Ouverture introuvable.'], Response::HTTP_NOT_FOUND);
         }
 
-        return new JsonResponse(OpeningOutput::fromEntity($opening)->toArray());
+        return $this->json(OpeningOutput::fromEntity($opening)->toArray());
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
@@ -57,7 +58,7 @@ class OpeningController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         if (!is_array($data)) {
-            return new JsonResponse(['error' => 'Invalid JSON body'], 400);
+            return $this->json(['error' => 'Corps de requête JSON invalide.'], Response::HTTP_BAD_REQUEST);
         }
 
         $input = OpeningInput::fromArray($data);
@@ -73,7 +74,7 @@ class OpeningController extends AbstractController
         $this->em->persist($opening);
         $this->em->flush();
 
-        return new JsonResponse(OpeningOutput::fromEntity($opening)->toArray(), 201);
+        return $this->json(OpeningOutput::fromEntity($opening)->toArray(), Response::HTTP_CREATED);
     }
 
     #[Route('/{id}', name: 'update', methods: ['PUT'])]
@@ -82,13 +83,13 @@ class OpeningController extends AbstractController
         $opening = $this->repository->find($id);
 
         if ($opening === null) {
-            return new JsonResponse(['error' => 'Opening not found'], 404);
+            return $this->json(['error' => 'Ouverture introuvable.'], Response::HTTP_NOT_FOUND);
         }
 
         $data = json_decode($request->getContent(), true);
 
         if (!is_array($data)) {
-            return new JsonResponse(['error' => 'Invalid JSON body'], 400);
+            return $this->json(['error' => 'Corps de requête JSON invalide.'], Response::HTTP_BAD_REQUEST);
         }
 
         $input = OpeningInput::fromArray($data);
@@ -101,7 +102,7 @@ class OpeningController extends AbstractController
         $this->hydrateFromInput($opening, $input);
         $this->em->flush();
 
-        return new JsonResponse(OpeningOutput::fromEntity($opening)->toArray());
+        return $this->json(OpeningOutput::fromEntity($opening)->toArray());
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
@@ -110,13 +111,13 @@ class OpeningController extends AbstractController
         $opening = $this->repository->find($id);
 
         if ($opening === null) {
-            return new JsonResponse(['error' => 'Opening not found'], 404);
+            return $this->json(['error' => 'Ouverture introuvable.'], Response::HTTP_NOT_FOUND);
         }
 
         $this->em->remove($opening);
         $this->em->flush();
 
-        return new JsonResponse(null, 204);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
     private function validateInput(OpeningInput $input): ?JsonResponse
@@ -132,7 +133,7 @@ class OpeningController extends AbstractController
             $errors[$violation->getPropertyPath()] = $violation->getMessage();
         }
 
-        return new JsonResponse(['errors' => $errors], 400);
+        return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
     }
 
     private function hydrateFromInput(Opening $opening, OpeningInput $input): void

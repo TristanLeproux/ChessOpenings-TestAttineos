@@ -22,7 +22,7 @@ class OpeningInput
     #[Assert\NotBlank(message: 'Le code ECO est obligatoire.')]
     #[Assert\Length(exactly: 3, exactMessage: 'Le code ECO doit contenir exactement {{ limit }} caractères.')]
     #[Assert\Regex(
-        pattern: '/^[A-E]\d{2}$/i',
+        pattern: '/^[A-E]\d{2}$/',
         message: 'Le code ECO doit être au format A00–E99 (ex: "C50").',
     )]
     public string $ecoCode = '';
@@ -38,6 +38,7 @@ class OpeningInput
     #[Assert\Date(message: 'La date doit être au format YYYY-MM-DD.')]
     public ?string $lastStudiedAt = null;
 
+    #[Assert\Length(max: 2000, maxMessage: 'Les notes ne peuvent pas dépasser {{ limit }} caractères.')]
     public ?string $notes = null;
 
     /**

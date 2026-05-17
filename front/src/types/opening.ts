@@ -10,12 +10,3 @@ export interface Opening {
   notes: string | null
   createdAt: string
 }
-
-export interface OpeningInput {
-  name: string
-  color: Color
-  ecoCode: string
-  masteryLevel: number
-  lastStudiedAt: string | null
-  notes: string | null
-}

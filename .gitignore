@@ -1,8 +1,10 @@
 NOTES.md
+CLAUDE.md
 .env.local
 back/var/
 back/vendor/
 back/.env.local
+front/.env.local
 front/node_modules/
 front/dist/
 .idea/

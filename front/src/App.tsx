@@ -12,6 +12,7 @@ export default function App() {
           <Route path="/openings" element={<OpeningListPage />} />
           <Route path="/openings/new" element={<OpeningFormPage />} />
           <Route path="/openings/:id/edit" element={<OpeningFormPage />} />
+          <Route path="*" element={<Navigate to="/openings" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>
