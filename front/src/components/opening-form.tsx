@@ -18,6 +18,8 @@ import { useCreateOpening } from '@/hooks/use-create-opening'
 import { useUpdateOpening } from '@/hooks/use-update-opening'
 import type { Opening } from '@/types/opening'
 
+const COLOR_LABEL: Record<string, string> = { white: 'Blancs', black: 'Noirs' }
+
 interface OpeningFormProps {
   initialData?: Opening
 }
@@ -78,7 +80,9 @@ export function OpeningForm({ initialData }: OpeningFormProps) {
           render={({ field }) => (
             <Select value={field.value} onValueChange={field.onChange}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Choisir une couleur" />
+                <SelectValue placeholder="Choisir une couleur">
+                  {field.value ? COLOR_LABEL[field.value] : undefined}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="white">Blancs</SelectItem>
